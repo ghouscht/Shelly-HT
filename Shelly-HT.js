@@ -1,4 +1,4 @@
-Module.register("Shelly-HT",{
+Module.register("Shelly-HT", {
 	// Default module config.
 	defaults: {
 		//Just a mock API I used for development
@@ -16,15 +16,18 @@ Module.register("Shelly-HT",{
 	},
 	start: function() {
 		var self = this;
+		var payload = {
+			apiPath: self.config.ShellyHTApiPath,
+			language: config.language
+		};
 		// Schedule update timer.
 		setInterval(function() {
-			self.sendSocketNotification("GetShelly", self.config.ShellyHTApiPath, self.config.language);
+			self.sendSocketNotification("GetShelly", payload);
 			self.updateDom();
 		}, this.config.RefreshInterval);
 	},
 	socketNotificationReceived: function (notification, payload) {
 		if (notification = "ShellyHTData"){
-			//Log.log(this.name + " received a socket notification: " + notification + " - Temp: " + payload.tmp + " Hum: " + payload.hum + "Updated: " + payload.updated);
 			this.ShellyHTData.tmp = payload.tmp
 			this.ShellyHTData.hum = payload.hum
 			this.ShellyHTData.updated = payload.updated

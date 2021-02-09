@@ -1,5 +1,4 @@
 ﻿//Include this into your config.js file
-
 {
     module: "Shelly-HT",
     header: "Shelly-HT",

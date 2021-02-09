@@ -1,0 +1,5 @@
+{
+    "TEMPERATURE": "Temperatur",
+    "HUMIDITY": "Feuchtigkeit",
+    "UPDATED": "Aktualisiert: {upd}"
+}

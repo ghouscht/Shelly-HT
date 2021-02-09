@@ -5,6 +5,7 @@ Module.register("Shelly-HT",{
 		ShellyHTApiPath: "http://www.mocky.io/v2/5e9999183300003e267b2744",
 		RefreshInterval: 3000,
 		displayUpdated: true,
+		displayBattery: false,
 		horizontalView: true
 	},
 	//After startup, we don't have data and might not have it for a long time, until Shelly HT wakes up.
@@ -22,9 +23,8 @@ Module.register("Shelly-HT",{
 
 		// Schedule update timer.
 		setInterval(function() {
-			self.sendSocketNotification("GetShelly", self.config.ShellyHTApiPath);
+			self.sendSocketNotification("GetShelly", self.config.ShellyHTApiPath, this.config.language);
 			self.updateDom();
-			//TODO: make the refresh interval configurable. Every 3 secs seems like an overkill
 		}, this.config.RefreshInterval);
 
 	},
@@ -40,6 +40,7 @@ Module.register("Shelly-HT",{
 	// Override dom generator.
 	getDom: function() {
 		var wrapper = document.createElement("div");
+
 		var tmp = this.translate("TEMPERATURE");
 		var hum = this.translate("HUMIDITY");
 		var bat = this.translate("BATTERY", {"bat": this.ShellyHTData.bat})
@@ -52,8 +53,11 @@ Module.register("Shelly-HT",{
 			ihtml += "  <div class='newline'><sup>" + hum + "</sup>" + this.ShellyHTData.hum + " %</div>"
 			ihtml += "  <div class='newline'><sup>" + tmp + "</sup>" + this.ShellyHTData.tmp + " ℃</div>"
 		}
-		if (this.config.displayUpdated){
-			ihtml += "  <p class='bottom'>" + bat + " " +  updated + "</p>"
+		if (this.config.displayUpdated && this.config.displayBattery){
+			ihtml += "  <p class='bottom'>" + updated + "</p>"
+		}
+		if (this.config.displayBattery) {
+			ihtml += " <p class='bottom'>" + bat + "</p"
 		}
 		ihtml += "</div>"
 		wrapper.innerHTML = ihtml
@@ -62,7 +66,8 @@ Module.register("Shelly-HT",{
 	getTranslations: function() {
         return  {
 			nl:	'translations/nl.json',
-			en: 'translations/en.json'
+			en: 'translations/en.json',
+			de: 'translations/de.json'
 		};
 	}
 });

@@ -1,6 +1,0 @@
-{
-    "TEMPERATURE": "Temperature",
-    "HUMIDITY": "Humidity",
-    "BATTERY": "battery: {bat}",
-    "UPDATED": "updated: {upd}"
-}

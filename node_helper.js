@@ -1,13 +1,32 @@
-var NodeHelper = require("node_helper");
+const NodeHelper = require("node_helper");
 const request = require('request');
+const fs = require('fs');
+
 module.exports = NodeHelper.create({
 	start: function() {},
 	// Frontend module pings the node helper to fetch data from Shelly HT
 	socketNotificationReceived: function (notification, payload) {
 		if (notification == "GetShelly"){
 			self = this;
+			const fileName = "ShellyHTData.json"
+
 			request(payload.apiPath, {json: true }, (err, res, body) => {
 				if (err) { 
+					// Since the shelly is not always on most connection attempts will fail. In this case
+					// simply read and return the saved data. This is useful also after restarts of the MagicMirror, so there
+					// is always data on screen.
+					if (err.code === "EHOSTUNREACH") {
+						fs.readFile(fileName, 'utf8', (err, data)=> {
+							if (err) {
+								return console.log(err);
+							}
+							
+							self.sendSocketNotification('ShellyHTData', JSON.parse(data));
+						})
+
+						return
+					}
+
 					return console.log(err); 
 				}
 
@@ -28,7 +47,13 @@ module.exports = NodeHelper.create({
 					updated: printed_date
 				}
 
-				console.log("Sending Shelly data to FE module", payload);
+				// save read values to file
+				fs.writeFile(fileName, JSON.stringify(payload), (err) => {
+					if(err) {
+						console.log(err);
+					}
+				});
+
 				self.sendSocketNotification('ShellyHTData', payload)
 			});
 		}
